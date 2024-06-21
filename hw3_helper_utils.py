@@ -21,7 +21,11 @@ def create_motion_blur_filter(length, angle):
 
     img = np.zeros(shape=(size_x, size_y))
 
-    cv2.line(img, pt1=(0, 0), pt2=(size_y - 1, size_x - 1), color=1.0)
+    # old version
+    # cv2.line(img=img, pt1=(0, 0), pt2=(size_y - 1, size_x - 1), color=1.0)
+
+    # new version
+    cv2.line(img=img, pt1=(0, 0), pt2=(size_y - 1, size_x - 1), color=(1.0, 1.0, 1.0))
     img = img / np.sum(img)
 
     return img
