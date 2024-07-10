@@ -13,7 +13,7 @@ def show_images_grid(images, titles=None):
     # Calculate the number of rows needed for 2 columns
     num_rows = (num_images + 1) // 2 if num_images > 1 else 1
 
-    fig, axes = plt.subplots(num_rows, 2, figsize=(10, num_rows * 5))
+    fig, axes = plt.subplots(num_rows, 2, figsize=(5, num_rows * 5))
 
     # Flatten axes for easier iteration if more than 1 image
     if num_images > 1:
@@ -26,13 +26,6 @@ def show_images_grid(images, titles=None):
         M, N = img.shape
         ax.imshow(img, cmap="gray")
         ax.set_title(title)
-        # ax.text(
-        #     M + M // 35,
-        #     N // 2,
-        #     f"Shape: {img.shape}\nType: {img.dtype}\nrange: [{np.min(img):.4f}, {np.max(img):.4f}]",
-        #     style="italic",
-        #     bbox={"facecolor": "red", "alpha": 0.5},
-        # )
         ax.axis("off")
 
     # Hide any unused subplots if number of images is odd
