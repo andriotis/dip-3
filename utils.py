@@ -124,7 +124,6 @@ def my_wiener_filter(y: np.ndarray, h: np.ndarray, K: float) -> np.ndarray:
     # Compute DFT of the image and the blur kernel
     Y = fft2(y)
     H = fft2(h_padded)
-
     # Compute power spectrum of the blur kernel
     H_mag_sq = np.abs(H) ** 2
 
@@ -142,7 +141,18 @@ def my_wiener_filter(y: np.ndarray, h: np.ndarray, K: float) -> np.ndarray:
 
 
 def plot_wiener_filter_results(
-    x, y, h, k_range, best_k, best_mse, mse_values, x_hat_optimal, verbose=False
+    x,
+    y,
+    h,
+    noise_level,
+    length,
+    angle,
+    k_range,
+    best_k,
+    best_mse,
+    mse_values,
+    x_hat_optimal,
+    verbose=True,
 ):
     """
     Plot the results of Wiener filter optimization and image deblurring.
@@ -151,6 +161,9 @@ def plot_wiener_filter_results(
     x (np.ndarray): Original image.
     y (np.ndarray): Blurred and noisy image.
     h (np.ndarray): Motion blur filter.
+    noise_level (float): Standard deviation of the Gaussian noise.
+    length (int): Length of the motion blur filter.
+    angle (int): Angle of the motion blur in degrees.
     k_range (np.ndarray): Range of K values used for optimization.
     best_k (float): Optimal K value.
     best_mse (float): MSE corresponding to the optimal K.
@@ -159,14 +172,14 @@ def plot_wiener_filter_results(
     verbose (bool): If True, plot all figures together. If False, plot independently. Default is False.
     """
     if verbose:
-        fig = plt.figure(figsize=(20, 12))
-        fig.suptitle("Wiener Filter Optimization and Results", fontsize=16)
+        fig = plt.figure(figsize=(12, 8))
+        # fig.suptitle("Wiener Filter Optimization and Results", fontsize=16)
 
     # Plot 1: Original MSE curve
     if verbose:
-        ax1 = fig.add_subplot(231)
+        ax1 = fig.add_subplot(221)
     else:
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(5, 5))
         ax1 = plt.gca()
     ax1.semilogx(k_range, mse_values)
     ax1.set_xlabel("K value")
@@ -178,9 +191,9 @@ def plot_wiener_filter_results(
 
     # Plot 2: MSE curve with optimal K
     if verbose:
-        ax2 = fig.add_subplot(232)
+        ax2 = fig.add_subplot(222)
     else:
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(5, 5))
         ax2 = plt.gca()
     ax2.semilogx(k_range, mse_values, "b-", label="MSE curve")
     ax2.semilogx(best_k, best_mse, "ro", markersize=10, label="Optimal K")
@@ -202,23 +215,20 @@ def plot_wiener_filter_results(
 
     # Plot 3, 4, 5: Original, Blurred/Noisy, and Deblurred Images
     if verbose:
-        ax3 = fig.add_subplot(234)
-        ax4 = fig.add_subplot(235)
-        ax5 = fig.add_subplot(236)
+        ax3 = fig.add_subplot(223)
+        ax4 = fig.add_subplot(224)
     else:
-        fig, (ax3, ax4, ax5) = plt.subplots(1, 3, figsize=(15, 5))
+        fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(15, 5))
 
-    ax3.imshow(x, cmap="gray")
-    ax3.set_title("Original Image")
+    ax3.imshow(y, cmap="gray")
+    ax3.set_title(
+        f"Blurred and Noisy Image (σ={noise_level:.2f}, L={length}, θ={angle}°)"
+    )
     ax3.axis("off")
 
-    ax4.imshow(y, cmap="gray")
-    ax4.set_title("Blurred and Noisy Image")
+    ax4.imshow(x_hat_optimal, cmap="gray")
+    ax4.set_title(f"Deblurred Image (K={best_k:.4f})")
     ax4.axis("off")
-
-    ax5.imshow(x_hat_optimal, cmap="gray")
-    ax5.set_title(f"Deblurred Image (K={best_k:.4f})")
-    ax5.axis("off")
 
     if verbose:
         plt.tight_layout()
@@ -253,9 +263,16 @@ def main():
 
     # Plot results
     plot_wiener_filter_results(
-        x, y, h, k_range, best_k, best_mse, mse_values, x_hat_optimal, verbose=True
+        x,
+        y,
+        h,
+        user_params["noise_level"],
+        user_params["length"],
+        user_params["angle"],
+        k_range,
+        best_k,
+        best_mse,
+        mse_values,
+        x_hat_optimal,
+        verbose=True if len(sys.argv) > 5 else False,
     )
-
-
-if __name__ == "__main__":
-    main()
